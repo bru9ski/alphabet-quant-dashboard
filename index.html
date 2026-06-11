@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AlphaBet Quant — Quantitative Betting Intelligence</title>
+  <title>Handicap Pro — Quantitative Betting Intelligence</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,11 +16,7 @@
         extend: {
           fontFamily: { sans: ['Inter', 'sans-serif'] },
           colors: {
-            slate: {
-              850: '#1a2234',
-              925: '#0d1421',
-              950: '#090e1a'
-            }
+            zinc: { 950: '#0a0a0a' }
           }
         }
       }
@@ -28,18 +24,18 @@
   </script>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #090e1a; }
+    body { font-family: 'Inter', sans-serif; background: #0a0a0a; }
     ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
     .sidebar-item { transition: all 0.2s ease; }
     .sidebar-item:hover { background: rgba(245,197,24,0.08); }
     .sidebar-item.active { background: rgba(245,197,24,0.12); border-left: 2px solid #f5c518; }
-    .card { background: #1e293b; border: 1px solid #1e3a5f33; border-radius: 12px; }
-    .card-dark { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; }
+    .card { background: #141414; border: 1px solid #2a2a2a; border-radius: 12px; }
+    .card-dark { background: #0a0a0a; border: 1px solid #222222; border-radius: 10px; }
     .input-field {
-      background: #0f172a;
-      border: 1px solid #334155;
+      background: #0a0a0a;
+      border: 1px solid #333;
       color: #e2e8f0;
       border-radius: 8px;
       padding: 10px 14px;
@@ -51,7 +47,7 @@
     .input-field:focus { border-color: #f5c518; }
     .btn-primary {
       background: #f5c518;
-      color: #0f172a;
+      color: #0a0a0a;
       border: none;
       border-radius: 8px;
       padding: 10px 20px;
@@ -62,9 +58,9 @@
     }
     .btn-primary:hover { background: #d4a017; transform: translateY(-1px); }
     .btn-secondary {
-      background: #1e293b;
+      background: #141414;
       color: #94a3b8;
-      border: 1px solid #334155;
+      border: 1px solid #333;
       border-radius: 8px;
       padding: 10px 20px;
       font-size: 14px;
@@ -75,7 +71,7 @@
     .btn-secondary:hover { border-color: #f5c518; color: #f5c518; }
     .btn-amber {
       background: #f59e0b;
-      color: #0f172a;
+      color: #0a0a0a;
       border: none;
       border-radius: 8px;
       padding: 8px 16px;
@@ -94,43 +90,37 @@
       cursor: default;
     }
     .ev-positive { color: #f5c518; font-weight: 700; }
-    .ev-negative { color: #64748b; }
+    .ev-negative { color: #555; }
     .badge-green { background: rgba(245,197,24,0.15); color: #f5c518; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid rgba(245,197,24,0.3); }
     .badge-amber { background: rgba(245,158,11,0.15); color: #f59e0b; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid rgba(245,158,11,0.3); }
-    .badge-red { background: rgba(239,68,68,0.15); color: #ef4444; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid rgba(239,68,68,0.3); }
+    .badge-red { background: rgba(220,38,38,0.18); color: #ef4444; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid rgba(220,38,38,0.35); }
     .tab-section { display: none; }
     .tab-section.active { display: block; }
     .bar-container { display: flex; flex-direction: column; gap: 8px; }
     .bar-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-    .bar-track { flex: 1; background: #1e293b; border-radius: 4px; height: 8px; overflow: hidden; }
+    .bar-track { flex: 1; background: #1a1a1a; border-radius: 4px; height: 8px; overflow: hidden; }
     .bar-fill-yellow { background: #f5c518; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-    .bar-fill-gray { background: #334155; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-    .ticket-item { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; }
+    .bar-fill-gray { background: #3f3f3f; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .ticket-item { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 12px; }
     .ticket-item.valid { border-color: rgba(245,197,24,0.3); }
     .ticket-item.warning { border-color: rgba(245,158,11,0.3); }
-    .stat-card { background: #1e293b; border: 1px solid #1e3a5f44; border-radius: 12px; padding: 20px; }
-    .glow-yellow { box-shadow: 0 0 20px rgba(245,197,24,0.1); }
-    .section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #64748b; margin-bottom: 16px; }
-    .logo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .stat-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; }
+    .section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 16px; }
+    .logo-wrap { display: flex; align-items: center; }
+    .logo-wrap img { height: 40px; width: auto; mix-blend-mode: screen; object-fit: contain; }
     @media (max-width: 768px) {
       #sidebar { transform: translateX(-100%); position: fixed; z-index: 50; transition: transform 0.3s; }
       #sidebar.open { transform: translateX(0); }
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex">
+<body class="bg-black text-slate-100 min-h-screen flex">
 
 <!-- SIDEBAR -->
-<aside id="sidebar" class="w-64 min-h-screen bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0">
-  <div class="p-5 border-b border-slate-800">
-    <div class="flex items-center gap-3">
-      <div id="logo-fallback" class="w-10 h-10 rounded-lg bg-yellow-500 flex items-center justify-center flex-shrink-0">
-        <span class="text-black font-black text-lg">A</span>
-      </div>
-      <div>
-        <div class="text-white font-bold text-sm tracking-wide">AlphaBet</div>
-        <div class="text-yellow-400 font-bold text-sm tracking-widest">QUANT</div>
-      </div>
+<aside id="sidebar" class="w-64 min-h-screen bg-zinc-950 border-r border-zinc-800 flex flex-col flex-shrink-0" style="background:#0d0d0d;border-right:1px solid #1f1f1f;">
+  <div class="p-5 border-b border-zinc-800" style="border-color:#1f1f1f;">
+    <div class="logo-wrap">
+      <img src="LOGO_PLACEHOLDER" alt="Handicap Pro" style="height:40px;width:auto;mix-blend-mode:screen;object-fit:contain;" />
     </div>
   </div>
 
@@ -154,27 +144,27 @@
     </button>
   </nav>
 
-  <div class="p-4 border-t border-slate-800">
+  <div class="p-4 border-t" style="border-color:#1f1f1f;">
     <div class="section-title">Gestão de Banca</div>
     <label class="text-xs text-slate-400 mb-1 block">Banca Total (R$)</label>
     <input type="number" id="bankroll" class="input-field" placeholder="1000.00" value="1000" oninput="updateBankroll()" />
     <div class="mt-2 text-xs text-slate-500">Kelly Fracionário ¼ ativo</div>
   </div>
 
-  <div class="p-4 border-t border-slate-800">
+  <div class="p-4 border-t" style="border-color:#1f1f1f;">
     <div class="flex items-center gap-2">
-      <div class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></div>
+      <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
       <span class="text-xs text-slate-500">Motor Quant Online</span>
     </div>
   </div>
 </aside>
 
 <!-- MOBILE HEADER -->
-<div class="md:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 py-3">
+<div class="md:hidden fixed top-0 left-0 right-0 z-40 border-b flex items-center justify-between px-4 py-3" style="background:#0d0d0d;border-color:#1f1f1f;">
   <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="text-slate-400">
     <i data-lucide="menu" class="w-5 h-5"></i>
   </button>
-  <span class="text-white font-bold text-sm">AlphaBet <span class="text-yellow-400">QUANT</span></span>
+  <span class="text-white font-bold text-sm">Handicap <span class="text-yellow-400">PRO</span></span>
   <div class="w-5"></div>
 </div>
 
@@ -224,7 +214,7 @@
             <path d="M0,120 C40,110 80,115 120,95 C160,75 200,80 240,60 C280,40 320,50 360,30 L400,25 L400,160 L0,160 Z" fill="url(#bancaGrad)"/>
             <path d="M0,120 C40,110 80,115 120,95 C160,75 200,80 240,60 C280,40 320,50 360,30 L400,25" fill="none" stroke="#f5c518" stroke-width="2" />
           </svg>
-          <div class="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-600 px-1">
+          <div class="absolute bottom-0 left-0 right-0 flex justify-between text-xs px-1" style="color:#444;">
             <span>Sem 1</span><span>Sem 2</span><span>Sem 3</span><span>Sem 4</span>
           </div>
         </div>
@@ -243,7 +233,7 @@
     <div class="card p-5">
       <div class="section-title">Controle de Risco — Parâmetros Kelly</div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">Max Stake / Aposta</div><div id="max-stake-pct" class="text-lg font-bold text-amber-400">2.5%</div><div id="max-stake-val" class="text-xs text-slate-500 mt-1">R$ 25.00</div></div>
+        <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">Max Stake / Aposta</div><div id="max-stake-pct" class="text-lg font-bold" style="color:#ef4444;">2.5%</div><div id="max-stake-val" class="text-xs text-slate-500 mt-1">R$ 25.00</div></div>
         <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">Critério</div><div class="text-lg font-bold text-yellow-400">¼ Kelly</div><div class="text-xs text-slate-500 mt-1">Fracionário</div></div>
         <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">EV Mínimo</div><div class="text-lg font-bold text-yellow-400">&gt; +5%</div><div class="text-xs text-slate-500 mt-1">Filtro estrito</div></div>
         <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">Zona @2.00</div><div class="text-lg font-bold text-yellow-400">1.95–2.15</div><div class="text-xs text-slate-500 mt-1">Odd combinada</div></div>
@@ -274,8 +264,8 @@
         <div class="overflow-x-auto"><div id="heatmap-container"></div></div>
         <div class="flex items-center gap-3 mt-4">
           <span class="text-xs text-slate-500">Intensidade:</span>
-          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded" style="background:#1e293b"></div><span class="text-xs text-slate-500">0%</span></div>
-          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded" style="background:#78350f"></div><span class="text-xs text-slate-500">Baixo</span></div>
+          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded" style="background:#1a1a1a"></div><span class="text-xs text-slate-500">0%</span></div>
+          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded" style="background:#7a2d0a"></div><span class="text-xs text-slate-500">Baixo</span></div>
           <div class="flex items-center gap-1"><div class="w-4 h-4 rounded" style="background:#f5c518"></div><span class="text-xs text-slate-500">Alto</span></div>
         </div>
       </div>
@@ -294,7 +284,7 @@
       <p class="text-slate-400 text-sm mt-1">Insira as odds de mercado e encontre automaticamente apostas com EV &gt; +5%</p>
     </div>
     <div id="vb-no-calc" class="card p-8 text-center">
-      <i data-lucide="alert-triangle" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
+      <i data-lucide="alert-triangle" class="w-10 h-10 mx-auto mb-3" style="color:#ef4444;"></i>
       <p class="text-slate-400">Execute o Motor de Poisson primeiro para gerar as probabilidades reais.</p>
       <button onclick="switchTab('poisson')" class="btn-primary mt-4">Ir para Poisson &amp; xG</button>
     </div>
@@ -304,7 +294,7 @@
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-slate-800">
+              <tr style="border-bottom:1px solid #222;">
                 <th class="text-left text-slate-500 py-3 font-medium">Mercado</th>
                 <th class="text-right text-slate-500 py-3 font-medium">P_real</th>
                 <th class="text-right text-slate-500 py-3 font-medium">Odd Casa</th>
@@ -341,7 +331,7 @@
             <i data-lucide="plus-circle" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
             Adicione apostas via Value Bet Detector
           </div>
-          <div id="ticket-summary" style="display:none" class="border-t border-slate-800 pt-4">
+          <div id="ticket-summary" style="display:none" class="pt-4" style="border-top:1px solid #222;">
             <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Odd Combinada:</span><span id="ticket-combined-odd" class="font-bold text-white">—</span></div>
             <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Status da Zona @2.00:</span><span id="ticket-zone-badge">—</span></div>
             <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Stake Sugerida (¼ Kelly):</span><span id="ticket-stake" class="font-bold text-yellow-400">—</span></div>
@@ -354,18 +344,18 @@
         <div class="card p-5 mb-4">
           <div class="section-title">Regras do Construtor</div>
           <div class="space-y-3">
-            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center mt-0.5 flex-shrink-0"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Máximo 2 pernas</div><div class="text-xs text-slate-500">Terceira seleção bloqueada automaticamente</div></div></div>
-            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center mt-0.5 flex-shrink-0"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Zona ótima 1.95–2.15</div><div class="text-xs text-slate-500">Indica alavancagem ideal sem risco excessivo</div></div></div>
-            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center mt-0.5 flex-shrink-0"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Stake pelo menor Kelly</div><div class="text-xs text-slate-500">Usa o menor stake entre as 2 pernas para segurança</div></div></div>
-            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center mt-0.5 flex-shrink-0"><i data-lucide="shield" class="w-3 h-3 text-amber-400"></i></div><div><div class="text-sm font-medium text-slate-300">Apenas Value Bets (+EV)</div><div class="text-xs text-slate-500">Somente apostas com EV &gt; +5% são elegíveis</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0" style="background:rgba(245,197,24,0.15)"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Máximo 2 pernas</div><div class="text-xs text-slate-500">Terceira seleção bloqueada automaticamente</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0" style="background:rgba(245,197,24,0.15)"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Zona ótima 1.95–2.15</div><div class="text-xs text-slate-500">Indica alavancagem ideal sem risco excessivo</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0" style="background:rgba(245,197,24,0.15)"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Stake pelo menor Kelly</div><div class="text-xs text-slate-500">Usa o menor stake entre as 2 pernas para segurança</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0" style="background:rgba(239,68,68,0.15)"><i data-lucide="shield" class="w-3 h-3" style="color:#ef4444;"></i></div><div><div class="text-sm font-medium text-slate-300">Apenas Value Bets (+EV)</div><div class="text-xs text-slate-500">Somente apostas com EV &gt; +5% são elegíveis</div></div></div>
           </div>
         </div>
         <div class="card p-5">
           <div class="section-title">Zona de Alavancagem @2.00</div>
           <div class="relative">
             <div class="flex items-center justify-between text-xs text-slate-500 mb-2"><span>1.50</span><span>1.95</span><span class="text-yellow-400 font-bold">2.05</span><span>2.15</span><span>2.50</span></div>
-            <div class="h-4 rounded-full" style="background: linear-gradient(90deg, #1e293b 0%, #1e293b 33%, rgba(245,197,24,0.4) 40%, #f5c518 50%, rgba(245,197,24,0.4) 60%, #1e293b 67%, #1e293b 100%)"></div>
-            <div class="flex items-center justify-between text-xs mt-2"><span class="text-slate-600">Baixo retorno</span><span class="text-yellow-400 font-semibold">Zona Ideal ✓</span><span class="text-slate-600">Alto risco</span></div>
+            <div class="h-4 rounded-full" style="background: linear-gradient(90deg, #1a1a1a 0%, #1a1a1a 33%, rgba(245,197,24,0.4) 40%, #f5c518 50%, rgba(245,197,24,0.4) 60%, #1a1a1a 67%, #1a1a1a 100%)"></div>
+            <div class="flex items-center justify-between text-xs mt-2"><span style="color:#444;">Baixo retorno</span><span class="text-yellow-400 font-semibold">Zona Ideal ✓</span><span style="color:#ef4444;font-size:11px;">Alto risco</span></div>
           </div>
         </div>
       </div>
@@ -375,7 +365,7 @@
 </main>
 
 <script>
-const STORAGE_KEY = 'alphabet_quant_state_v1';
+const STORAGE_KEY = 'handicap_pro_state_v1';
 
 function saveState() {
   try {
@@ -508,14 +498,14 @@ function renderHeatmap(matrix) {
   const hn=document.getElementById('home-name').value||'M';
   const an=document.getElementById('away-name').value||'V';
   let html='<table style="border-collapse:separate;border-spacing:4px">';
-  html+='<tr><td class="heat-cell" style="background:transparent;color:#64748b;font-size:10px">'+hn.slice(0,3)+'\\'+an.slice(0,3)+'</td>';
-  for(let a=0;a<=maxGoals;a++) html+='<td class="heat-cell" style="background:transparent;color:#64748b;font-size:11px">'+a+'</td>';
+  html+='<tr><td class="heat-cell" style="background:transparent;color:#555;font-size:10px">'+hn.slice(0,3)+'\\'+an.slice(0,3)+'</td>';
+  for(let a=0;a<=maxGoals;a++) html+='<td class="heat-cell" style="background:transparent;color:#555;font-size:11px">'+a+'</td>';
   html+='</tr>';
   for(let h=0;h<=maxGoals;h++){
-    html+='<tr><td class="heat-cell" style="background:transparent;color:#64748b;font-size:11px">'+h+'</td>';
+    html+='<tr><td class="heat-cell" style="background:transparent;color:#555;font-size:11px">'+h+'</td>';
     for(let a=0;a<=maxGoals;a++){
       const p=matrix[h][a]; const intensity=max>0?p/max:0;
-      const bg=heatColor(intensity); const tc=intensity>0.5?'#0f172a':'#94a3b8';
+      const bg=heatColor(intensity); const tc=intensity>0.5?'#0a0a0a':'#888';
       html+='<td class="heat-cell" style="background:'+bg+';color:'+tc+';min-width:52px">'+(p*100).toFixed(1)+'%</td>';
     }
     html+='</tr>';
@@ -525,9 +515,9 @@ function renderHeatmap(matrix) {
 }
 
 function heatColor(t) {
-  const r=Math.round(30+(245-30)*t);
-  const g=Math.round(41+(197-41)*t);
-  const b=Math.round(59+(24-59)*t);
+  const r=Math.round(26+(245-26)*t);
+  const g=Math.round(26+(197-26)*t);
+  const b=Math.round(26+(24-26)*t);
   return 'rgb('+r+','+g+','+b+')';
 }
 
@@ -546,9 +536,9 @@ function renderMarketProbs(m) {
   let html='';
   items.forEach(item=>{
     const imp=item.val>0?(1/item.val).toFixed(2):'—';
-    html+='<div class="flex justify-between items-center py-1.5 border-b border-slate-800/50">';
+    html+='<div class="flex justify-between items-center py-1.5" style="border-bottom:1px solid #1f1f1f;">';
     html+='<span class="text-slate-400 text-sm">'+item.label+'</span>';
-    html+='<div class="flex items-center gap-3"><span class="text-xs text-slate-600">@'+imp+'</span>';
+    html+='<div class="flex items-center gap-3"><span class="text-xs" style="color:#444;">@'+imp+'</span>';
     html+='<span class="font-bold text-sm '+item.color+'">'+(item.val*100).toFixed(2)+'%</span></div></div>';
   });
   document.getElementById('market-probs').innerHTML=html;
@@ -574,7 +564,7 @@ function renderHandicap(m) {
   let html='';
   items.forEach(item=>{
     html+='<div class="card-dark p-4"><div class="text-sm font-semibold text-slate-300 mb-1">'+item.title+'</div>';
-    html+='<div class="text-xs text-slate-600 mb-3 font-mono">'+item.formula+'</div>';
+    html+='<div class="text-xs mb-3 font-mono" style="color:#444;">'+item.formula+'</div>';
     html+='<div class="flex justify-between">';
     html+='<div><div class="text-xs text-slate-500">P_real</div><div class="text-lg font-bold text-yellow-400">'+(item.val*100).toFixed(2)+'%</div></div>';
     html+='<div class="text-right"><div class="text-xs text-slate-500">Odd Justa</div><div class="text-lg font-bold text-white">@'+item.fairOdd.toFixed(2)+'</div></div>';
@@ -588,7 +578,7 @@ function rebuildValueBetTable() {
   let html='';
   state.markets.forEach((mkt,idx)=>{
     const oddId='odd-'+idx;
-    html+='<tr class="border-b border-slate-800/50 hover:bg-slate-800/30">';
+    html+='<tr style="border-bottom:1px solid #1f1f1f;" onmouseover="this.style.background=\'#111\'" onmouseout="this.style.background=\'\'">';
     html+='<td class="py-3 pr-4"><span class="text-slate-300 text-sm">'+mkt.label+'</span></td>';
     html+='<td class="py-3 text-right text-yellow-400 font-mono text-sm">'+(mkt.pReal*100).toFixed(2)+'%</td>';
     html+='<td class="py-3 text-right"><input type="number" id="'+oddId+'" class="input-field text-right" style="width:90px;padding:6px 10px" step="0.01" min="1.01" placeholder="—" oninput="calcVBRow('+idx+')" /></td>';
@@ -681,7 +671,7 @@ function renderTicket() {
     html+='<div class="text-sm font-semibold text-slate-200">'+item.label+'</div>';
     html+='<div class="flex gap-3 mt-1"><span class="text-xs text-yellow-400">@'+item.odd.toFixed(2)+'</span>';
     html+='<span class="text-xs text-slate-500">EV: +'+(item.ev*100).toFixed(1)+'%</span></div></div>';
-    html+='<button onclick="removeFromTicket(\''+item.id+'\')" class="text-slate-600 hover:text-red-400 ml-2"><i data-lucide="x" class="w-4 h-4"></i></button>';
+    html+='<button onclick="removeFromTicket(\''+item.id+'\')" style="color:#555;" onmouseover="this.style.color=\'#ef4444\'" onmouseout="this.style.color=\'#555\'" class="ml-2"><i data-lucide="x" class="w-4 h-4"></i></button>';
     html+='</div></div>';
   });
   container.innerHTML=html; lucide.createIcons();
