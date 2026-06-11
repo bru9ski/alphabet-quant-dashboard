@@ -75,7 +75,7 @@
     .btn-secondary:hover { border-color: #f5c518; color: #f5c518; }
     .btn-amber {
       background: #f59e0b;
-      color: #fff;
+      color: #0f172a;
       border: none;
       border-radius: 8px;
       padding: 8px 16px;
@@ -103,13 +103,13 @@
     .bar-container { display: flex; flex-direction: column; gap: 8px; }
     .bar-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
     .bar-track { flex: 1; background: #1e293b; border-radius: 4px; height: 8px; overflow: hidden; }
-    .bar-fill-green { background: #f5c518; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-    .bar-fill-blue { background: #334155; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .bar-fill-yellow { background: #f5c518; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .bar-fill-gray { background: #334155; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
     .ticket-item { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; }
     .ticket-item.valid { border-color: rgba(245,197,24,0.3); }
     .ticket-item.warning { border-color: rgba(245,158,11,0.3); }
     .stat-card { background: #1e293b; border: 1px solid #1e3a5f44; border-radius: 12px; padding: 20px; }
-    .glow-green { box-shadow: 0 0 20px rgba(245,197,24,0.1); }
+    .glow-yellow { box-shadow: 0 0 20px rgba(245,197,24,0.1); }
     .section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #64748b; margin-bottom: 16px; }
     .logo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
     @media (max-width: 768px) {
@@ -232,10 +232,10 @@
       <div class="card p-5">
         <div class="section-title">Distribuição de Mercados</div>
         <div class="space-y-3">
-          <div class="bar-row"><span class="text-slate-400 w-20">1X2</span><div class="bar-track"><div class="bar-fill-green" style="width:65%"></div></div><span class="text-slate-400 text-xs w-8">65%</span></div>
-          <div class="bar-row"><span class="text-slate-400 w-20">Over/Under</span><div class="bar-track"><div class="bar-fill-blue" style="width:20%"></div></div><span class="text-slate-400 text-xs w-8">20%</span></div>
-          <div class="bar-row"><span class="text-slate-400 w-20">Handicap</span><div class="bar-track"><div class="bar-fill-green" style="width:10%"></div></div><span class="text-slate-400 text-xs w-8">10%</span></div>
-          <div class="bar-row"><span class="text-slate-400 w-20">BTTS</span><div class="bar-track"><div class="bar-fill-blue" style="width:5%"></div></div><span class="text-slate-400 text-xs w-8">5%</span></div>
+          <div class="bar-row"><span class="text-slate-400 w-20">1X2</span><div class="bar-track"><div class="bar-fill-yellow" style="width:65%"></div></div><span class="text-slate-400 text-xs w-8">65%</span></div>
+          <div class="bar-row"><span class="text-slate-400 w-20">Over/Under</span><div class="bar-track"><div class="bar-fill-gray" style="width:20%"></div></div><span class="text-slate-400 text-xs w-8">20%</span></div>
+          <div class="bar-row"><span class="text-slate-400 w-20">Handicap</span><div class="bar-track"><div class="bar-fill-yellow" style="width:10%"></div></div><span class="text-slate-400 text-xs w-8">10%</span></div>
+          <div class="bar-row"><span class="text-slate-400 w-20">BTTS</span><div class="bar-track"><div class="bar-fill-gray" style="width:5%"></div></div><span class="text-slate-400 text-xs w-8">5%</span></div>
         </div>
       </div>
     </div>
@@ -431,8 +431,7 @@ function factorial(n) { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r
 function poisson(k, lam) { return Math.pow(lam, k) * Math.exp(-lam) / factorial(k); }
 
 function buildMatrix(lh, la) {
-  const maxGoals = 5;
-  const m = [];
+  const maxGoals = 5; const m = [];
   for (let h = 0; h <= maxGoals; h++) { m[h] = []; for (let a = 0; a <= maxGoals; a++) m[h][a] = poisson(h, lh) * poisson(a, la); }
   return m;
 }
@@ -539,10 +538,10 @@ function renderMarketProbs(m) {
     {label:'Vitória '+hn,val:m.pHome,color:'text-yellow-400'},
     {label:'Empate',val:m.pDraw,color:'text-amber-400'},
     {label:'Vitória '+an,val:m.pAway,color:'text-slate-300'},
-    {label:'BTTS Sim',val:m.pBTTS,color:'text-purple-400'},
-    {label:'BTTS Não',val:m.pNBTTS,color:'text-rose-400'},
-    {label:'Over 1.5',val:m.pOver15,color:'text-cyan-400'},
-    {label:'Over 2.5',val:m.pOver25,color:'text-teal-400'},
+    {label:'BTTS Sim',val:m.pBTTS,color:'text-slate-300'},
+    {label:'BTTS Não',val:m.pNBTTS,color:'text-slate-400'},
+    {label:'Over 1.5',val:m.pOver15,color:'text-slate-300'},
+    {label:'Over 2.5',val:m.pOver25,color:'text-slate-400'},
   ];
   let html='';
   items.forEach(item=>{
@@ -558,7 +557,7 @@ function renderMarketProbs(m) {
 function renderProbBars(m) {
   const total=m.pHome+m.pDraw+m.pAway;
   let html='';
-  [{label:'1 (Casa)',val:m.pHome,cls:'bar-fill-green'},{label:'X (Empate)',val:m.pDraw,cls:'bar-fill-blue'},{label:'2 (Fora)',val:m.pAway,cls:'bar-fill-green'}].forEach(item=>{
+  [{label:'1 (Casa)',val:m.pHome,cls:'bar-fill-yellow'},{label:'X (Empate)',val:m.pDraw,cls:'bar-fill-gray'},{label:'2 (Fora)',val:m.pAway,cls:'bar-fill-yellow'}].forEach(item=>{
     const pct=total>0?(item.val/total*100).toFixed(1):0;
     html+='<div class="bar-row"><span class="text-slate-400 w-24">'+item.label+'</span>';
     html+='<div class="bar-track"><div class="'+item.cls+'" style="width:'+pct+'%"></div></div>';
