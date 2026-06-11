@@ -1,14 +1,717 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
-<!-- AlphaBet Quant - Dark Yellow Theme with LocalStorage -->
-<!-- Full file: download from releases or clone the repo -->
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AlphaBet Quant — Quantitative Betting Intelligence</title>
-  <meta name="description" content="Dashboard quantitativo para apostas esportivas com tema Dark+Yellow e LocalStorage" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            slate: {
+              850: '#1a2234',
+              925: '#0d1421',
+              950: '#090e1a'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #090e1a; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .sidebar-item { transition: all 0.2s ease; }
+    .sidebar-item:hover { background: rgba(245,197,24,0.08); }
+    .sidebar-item.active { background: rgba(245,197,24,0.12); border-left: 2px solid #f5c518; }
+    .card { background: #1e293b; border: 1px solid #1e3a5f33; border-radius: 12px; }
+    .card-dark { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; }
+    .input-field {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+      width: 100%;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .input-field:focus { border-color: #f5c518; }
+    .btn-primary {
+      background: #f5c518;
+      color: #0f172a;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover { background: #d4a017; transform: translateY(-1px); }
+    .btn-secondary {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: #f5c518; color: #f5c518; }
+    .btn-amber {
+      background: #f59e0b;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-amber:hover { background: #d97706; }
+    .heat-cell {
+      width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px;
+      font-size: 11px; font-weight: 600;
+      transition: all 0.3s;
+      cursor: default;
+    }
+    .ev-positive { color: #f5c518; font-weight: 700; }
+    .ev-negative { color: #64748b; }
+    .badge-green { background: rgba(245,197,24,0.15); color: #f5c518; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid rgba(245,197,24,0.3); }
+    .badge-amber { background: rgba(245,158,11,0.15); color: #f59e0b; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid rgba(245,158,11,0.3); }
+    .badge-red { background: rgba(239,68,68,0.15); color: #ef4444; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid rgba(239,68,68,0.3); }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+    .bar-container { display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .bar-track { flex: 1; background: #1e293b; border-radius: 4px; height: 8px; overflow: hidden; }
+    .bar-fill-green { background: #f5c518; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .bar-fill-blue { background: #334155; height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .ticket-item { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; }
+    .ticket-item.valid { border-color: rgba(245,197,24,0.3); }
+    .ticket-item.warning { border-color: rgba(245,158,11,0.3); }
+    .stat-card { background: #1e293b; border: 1px solid #1e3a5f44; border-radius: 12px; padding: 20px; }
+    .glow-green { box-shadow: 0 0 20px rgba(245,197,24,0.1); }
+    .section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #64748b; margin-bottom: 16px; }
+    .logo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    @media (max-width: 768px) {
+      #sidebar { transform: translateX(-100%); position: fixed; z-index: 50; transition: transform 0.3s; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
 </head>
-<body>
-  <p>Abra o arquivo index.html completo disponível no release ou clone o repositório.</p>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex">
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="w-64 min-h-screen bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0">
+  <div class="p-5 border-b border-slate-800">
+    <div class="flex items-center gap-3">
+      <div id="logo-fallback" class="w-10 h-10 rounded-lg bg-yellow-500 flex items-center justify-center flex-shrink-0">
+        <span class="text-black font-black text-lg">A</span>
+      </div>
+      <div>
+        <div class="text-white font-bold text-sm tracking-wide">AlphaBet</div>
+        <div class="text-yellow-400 font-bold text-sm tracking-widest">QUANT</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="flex-1 p-3 space-y-1 mt-2">
+    <div class="section-title pl-2">Módulos</div>
+    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-slate-300 text-sm font-medium">
+      <i data-lucide="layout-dashboard" class="w-4 h-4 text-yellow-400"></i>
+      Dashboard
+    </button>
+    <button onclick="switchTab('poisson')" id="nav-poisson" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-slate-300 text-sm font-medium">
+      <i data-lucide="function-square" class="w-4 h-4 text-yellow-400"></i>
+      Poisson &amp; xG
+    </button>
+    <button onclick="switchTab('valuebet')" id="nav-valuebet" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-slate-300 text-sm font-medium">
+      <i data-lucide="target" class="w-4 h-4 text-yellow-400"></i>
+      Value Bet Detector
+    </button>
+    <button onclick="switchTab('ticket')" id="nav-ticket" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-slate-300 text-sm font-medium">
+      <i data-lucide="ticket" class="w-4 h-4 text-yellow-400"></i>
+      Bilhete @2.00
+    </button>
+  </nav>
+
+  <div class="p-4 border-t border-slate-800">
+    <div class="section-title">Gestão de Banca</div>
+    <label class="text-xs text-slate-400 mb-1 block">Banca Total (R$)</label>
+    <input type="number" id="bankroll" class="input-field" placeholder="1000.00" value="1000" oninput="updateBankroll()" />
+    <div class="mt-2 text-xs text-slate-500">Kelly Fracionário ¼ ativo</div>
+  </div>
+
+  <div class="p-4 border-t border-slate-800">
+    <div class="flex items-center gap-2">
+      <div class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></div>
+      <span class="text-xs text-slate-500">Motor Quant Online</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MOBILE HEADER -->
+<div class="md:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 py-3">
+  <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="text-slate-400">
+    <i data-lucide="menu" class="w-5 h-5"></i>
+  </button>
+  <span class="text-white font-bold text-sm">AlphaBet <span class="text-yellow-400">QUANT</span></span>
+  <div class="w-5"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="flex-1 overflow-auto p-6 md:pt-6 pt-16">
+
+  <!-- DASHBOARD -->
+  <section id="tab-dashboard" class="tab-section active">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-white">Dashboard</h1>
+      <p class="text-slate-400 text-sm mt-1">Visão geral da sua performance quantitativa</p>
+    </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="stat-card">
+        <div class="text-xs text-slate-500 mb-1 uppercase tracking-wider">Banca Atual</div>
+        <div id="dash-bankroll" class="text-2xl font-bold text-white">R$ 1.000</div>
+        <div class="text-xs text-yellow-400 mt-1">+0.0% esta semana</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-xs text-slate-500 mb-1 uppercase tracking-wider">ROI Acumulado</div>
+        <div class="text-2xl font-bold text-yellow-400">+8.4%</div>
+        <div class="text-xs text-slate-500 mt-1">Últimos 30 dias</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-xs text-slate-500 mb-1 uppercase tracking-wider">Value Bets Ativas</div>
+        <div id="dash-valuebets" class="text-2xl font-bold text-amber-400">0</div>
+        <div class="text-xs text-slate-500 mt-1">EV &gt; +5%</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-xs text-slate-500 mb-1 uppercase tracking-wider">Bilhete @2.00</div>
+        <div id="dash-ticket-status" class="text-2xl font-bold text-slate-300">0/2</div>
+        <div class="text-xs text-slate-500 mt-1">Pernas selecionadas</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+      <div class="card p-5">
+        <div class="section-title">Curva de Banca Simulada</div>
+        <div class="relative h-40">
+          <svg width="100%" height="160" viewBox="0 0 400 160" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="bancaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f5c518" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#f5c518" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,120 C40,110 80,115 120,95 C160,75 200,80 240,60 C280,40 320,50 360,30 L400,25 L400,160 L0,160 Z" fill="url(#bancaGrad)"/>
+            <path d="M0,120 C40,110 80,115 120,95 C160,75 200,80 240,60 C280,40 320,50 360,30 L400,25" fill="none" stroke="#f5c518" stroke-width="2" />
+          </svg>
+          <div class="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-600 px-1">
+            <span>Sem 1</span><span>Sem 2</span><span>Sem 3</span><span>Sem 4</span>
+          </div>
+        </div>
+      </div>
+      <div class="card p-5">
+        <div class="section-title">Distribuição de Mercados</div>
+        <div class="space-y-3">
+          <div class="bar-row"><span class="text-slate-400 w-20">1X2</span><div class="bar-track"><div class="bar-fill-green" style="width:65%"></div></div><span class="text-slate-400 text-xs w-8">65%</span></div>
+          <div class="bar-row"><span class="text-slate-400 w-20">Over/Under</span><div class="bar-track"><div class="bar-fill-blue" style="width:20%"></div></div><span class="text-slate-400 text-xs w-8">20%</span></div>
+          <div class="bar-row"><span class="text-slate-400 w-20">Handicap</span><div class="bar-track"><div class="bar-fill-green" style="width:10%"></div></div><span class="text-slate-400 text-xs w-8">10%</span></div>
+          <div class="bar-row"><span class="text-slate-400 w-20">BTTS</span><div class="bar-track"><div class="bar-fill-blue" style="width:5%"></div></div><span class="text-slate-400 text-xs w-8">5%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-5">
+      <div class="section-title">Controle de Risco — Parâmetros Kelly</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">Max Stake / Aposta</div><div id="max-stake-pct" class="text-lg font-bold text-amber-400">2.5%</div><div id="max-stake-val" class="text-xs text-slate-500 mt-1">R$ 25.00</div></div>
+        <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">Critério</div><div class="text-lg font-bold text-yellow-400">¼ Kelly</div><div class="text-xs text-slate-500 mt-1">Fracionário</div></div>
+        <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">EV Mínimo</div><div class="text-lg font-bold text-yellow-400">&gt; +5%</div><div class="text-xs text-slate-500 mt-1">Filtro estrito</div></div>
+        <div class="card-dark p-4 text-center"><div class="text-xs text-slate-500 mb-1">Zona @2.00</div><div class="text-lg font-bold text-yellow-400">1.95–2.15</div><div class="text-xs text-slate-500 mt-1">Odd combinada</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POISSON -->
+  <section id="tab-poisson" class="tab-section">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-white">Motor de Poisson &amp; xG</h1>
+      <p class="text-slate-400 text-sm mt-1">Calcule probabilidades reais a partir dos xG projetados do confronto</p>
+    </div>
+    <div class="card p-5 mb-6">
+      <div class="section-title">Parâmetros do Confronto</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div><label class="text-xs text-slate-400 mb-2 block">Nome do Mandante</label><input type="text" id="home-name" class="input-field" placeholder="Ex: Flamengo" value="Mandante" /></div>
+        <div><label class="text-xs text-slate-400 mb-2 block">Nome do Visitante</label><input type="text" id="away-name" class="input-field" placeholder="Ex: Vasco" value="Visitante" /></div>
+        <div></div>
+        <div><label class="text-xs text-slate-400 mb-2 block">λ Mandante (xG projetado)</label><input type="number" id="xg-home" class="input-field" placeholder="1.45" value="1.45" step="0.01" min="0" max="5" /></div>
+        <div><label class="text-xs text-slate-400 mb-2 block">λ Visitante (xG projetado)</label><input type="number" id="xg-away" class="input-field" placeholder="0.95" value="0.95" step="0.01" min="0" max="5" /></div>
+        <div><button onclick="runPoisson()" class="btn-primary w-full flex items-center justify-center gap-2"><i data-lucide="zap" class="w-4 h-4"></i> Calcular Probabilidades</button></div>
+      </div>
+    </div>
+    <div id="poisson-results" style="display:none">
+      <div class="card p-5 mb-6">
+        <div class="section-title">Matriz de Placar Exato (Heatmap de Probabilidades)</div>
+        <div class="overflow-x-auto"><div id="heatmap-container"></div></div>
+        <div class="flex items-center gap-3 mt-4">
+          <span class="text-xs text-slate-500">Intensidade:</span>
+          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded" style="background:#1e293b"></div><span class="text-xs text-slate-500">0%</span></div>
+          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded" style="background:#78350f"></div><span class="text-xs text-slate-500">Baixo</span></div>
+          <div class="flex items-center gap-1"><div class="w-4 h-4 rounded" style="background:#f5c518"></div><span class="text-xs text-slate-500">Alto</span></div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="card p-5"><div class="section-title">Mercados Principais — P_real</div><div id="market-probs" class="space-y-3"></div></div>
+        <div class="card p-5"><div class="section-title">Comparativo Visual</div><div id="prob-bars" class="bar-container"></div></div>
+      </div>
+      <div class="card p-5"><div class="section-title">Handicap Asiático</div><div id="handicap-probs" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div>
+    </div>
+  </section>
+
+  <!-- VALUE BET -->
+  <section id="tab-valuebet" class="tab-section">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-white">Value Bet Detector</h1>
+      <p class="text-slate-400 text-sm mt-1">Insira as odds de mercado e encontre automaticamente apostas com EV &gt; +5%</p>
+    </div>
+    <div id="vb-no-calc" class="card p-8 text-center">
+      <i data-lucide="alert-triangle" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
+      <p class="text-slate-400">Execute o Motor de Poisson primeiro para gerar as probabilidades reais.</p>
+      <button onclick="switchTab('poisson')" class="btn-primary mt-4">Ir para Poisson &amp; xG</button>
+    </div>
+    <div id="vb-content" style="display:none">
+      <div class="card p-5 mb-6">
+        <div class="section-title">Odds Oferecidas pelo Mercado</div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-800">
+                <th class="text-left text-slate-500 py-3 font-medium">Mercado</th>
+                <th class="text-right text-slate-500 py-3 font-medium">P_real</th>
+                <th class="text-right text-slate-500 py-3 font-medium">Odd Casa</th>
+                <th class="text-right text-slate-500 py-3 font-medium">P_implícita</th>
+                <th class="text-right text-slate-500 py-3 font-medium">EV%</th>
+                <th class="text-right text-slate-500 py-3 font-medium">Kelly ¼</th>
+                <th class="text-right text-slate-500 py-3 font-medium">Stake</th>
+                <th class="text-center text-slate-500 py-3 font-medium">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="vb-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="vb-summary" class="card p-5">
+        <div class="section-title">Value Bets Identificadas (EV &gt; +5%)</div>
+        <div id="vb-summary-content" class="text-slate-400 text-sm">Nenhuma value bet encontrada ainda.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKET -->
+  <section id="tab-ticket" class="tab-section">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-white">Construtor de Bilhete @2.00</h1>
+      <p class="text-slate-400 text-sm mt-1">Máximo 2 seleções — Odd combinada alvo: entre 1.95 e 2.15</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div>
+        <div class="card p-5 mb-4">
+          <div class="section-title">Bilhete Atual</div>
+          <div id="ticket-legs" class="space-y-3 mb-4"></div>
+          <div id="ticket-empty" class="text-center py-6 text-slate-500 text-sm">
+            <i data-lucide="plus-circle" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+            Adicione apostas via Value Bet Detector
+          </div>
+          <div id="ticket-summary" style="display:none" class="border-t border-slate-800 pt-4">
+            <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Odd Combinada:</span><span id="ticket-combined-odd" class="font-bold text-white">—</span></div>
+            <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Status da Zona @2.00:</span><span id="ticket-zone-badge">—</span></div>
+            <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Stake Sugerida (¼ Kelly):</span><span id="ticket-stake" class="font-bold text-yellow-400">—</span></div>
+            <div class="flex justify-between text-sm mb-4"><span class="text-slate-400">Retorno Potencial:</span><span id="ticket-return" class="font-bold text-white">—</span></div>
+            <button onclick="clearTicket()" class="btn-secondary w-full text-sm">Limpar Bilhete</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card p-5 mb-4">
+          <div class="section-title">Regras do Construtor</div>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center mt-0.5 flex-shrink-0"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Máximo 2 pernas</div><div class="text-xs text-slate-500">Terceira seleção bloqueada automaticamente</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center mt-0.5 flex-shrink-0"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Zona ótima 1.95–2.15</div><div class="text-xs text-slate-500">Indica alavancagem ideal sem risco excessivo</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center mt-0.5 flex-shrink-0"><i data-lucide="check" class="w-3 h-3 text-yellow-400"></i></div><div><div class="text-sm font-medium text-slate-300">Stake pelo menor Kelly</div><div class="text-xs text-slate-500">Usa o menor stake entre as 2 pernas para segurança</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center mt-0.5 flex-shrink-0"><i data-lucide="shield" class="w-3 h-3 text-amber-400"></i></div><div><div class="text-sm font-medium text-slate-300">Apenas Value Bets (+EV)</div><div class="text-xs text-slate-500">Somente apostas com EV &gt; +5% são elegíveis</div></div></div>
+          </div>
+        </div>
+        <div class="card p-5">
+          <div class="section-title">Zona de Alavancagem @2.00</div>
+          <div class="relative">
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-2"><span>1.50</span><span>1.95</span><span class="text-yellow-400 font-bold">2.05</span><span>2.15</span><span>2.50</span></div>
+            <div class="h-4 rounded-full" style="background: linear-gradient(90deg, #1e293b 0%, #1e293b 33%, rgba(245,197,24,0.4) 40%, #f5c518 50%, rgba(245,197,24,0.4) 60%, #1e293b 67%, #1e293b 100%)"></div>
+            <div class="flex items-center justify-between text-xs mt-2"><span class="text-slate-600">Baixo retorno</span><span class="text-yellow-400 font-semibold">Zona Ideal ✓</span><span class="text-slate-600">Alto risco</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const STORAGE_KEY = 'alphabet_quant_state_v1';
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      bankroll: state.bankroll,
+      poissonDone: state.poissonDone,
+      markets: state.markets,
+      ticket: state.ticket,
+      xgHome: document.getElementById('xg-home')?.value,
+      xgAway: document.getElementById('xg-away')?.value,
+      homeName: document.getElementById('home-name')?.value,
+      awayName: document.getElementById('away-name')?.value,
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return null; return JSON.parse(raw); } catch(e) { return null; }
+}
+
+function restoreState() {
+  const saved = loadState();
+  if (!saved) return;
+  if (saved.bankroll !== undefined) { const el = document.getElementById('bankroll'); if (el) el.value = saved.bankroll; }
+  if (saved.xgHome !== undefined && document.getElementById('xg-home')) document.getElementById('xg-home').value = saved.xgHome;
+  if (saved.xgAway !== undefined && document.getElementById('xg-away')) document.getElementById('xg-away').value = saved.xgAway;
+  if (saved.homeName !== undefined && document.getElementById('home-name')) document.getElementById('home-name').value = saved.homeName;
+  if (saved.awayName !== undefined && document.getElementById('away-name')) document.getElementById('away-name').value = saved.awayName;
+  if (saved.poissonDone && saved.markets) {
+    state.poissonDone = true; state.markets = saved.markets;
+    document.getElementById('poisson-results').style.display = 'block';
+    document.getElementById('vb-no-calc').style.display = 'none';
+    document.getElementById('vb-content').style.display = 'block';
+    rebuildValueBetTable();
+  }
+  if (Array.isArray(saved.ticket)) {
+    state.ticket = saved.ticket; renderTicket(); updateTicketSummary();
+    document.getElementById('dash-ticket-status').textContent = state.ticket.length + '/2';
+  }
+  updateBankroll();
+}
+
+const state = { bankroll: 1000, poissonDone: false, markets: [], ticket: [] };
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('[id^="nav-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('nav-' + tab).classList.add('active');
+}
+
+function factorial(n) { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r; }
+function poisson(k, lam) { return Math.pow(lam, k) * Math.exp(-lam) / factorial(k); }
+
+function buildMatrix(lh, la) {
+  const maxGoals = 5;
+  const m = [];
+  for (let h = 0; h <= maxGoals; h++) { m[h] = []; for (let a = 0; a <= maxGoals; a++) m[h][a] = poisson(h, lh) * poisson(a, la); }
+  return m;
+}
+
+function calcMarkets(m) {
+  let pH=0,pD=0,pA=0,pBTTS=0,pO15=0,pO25=0,pU15=0,pU25=0,pAH00=0,pAHm10=0;
+  const maxGoals=5;
+  for(let h=0;h<=maxGoals;h++) for(let a=0;a<=maxGoals;a++) {
+    const v=m[h][a];
+    if(h>a) pH+=v; else if(h===a) pD+=v; else pA+=v;
+    if(h>0&&a>0) pBTTS+=v;
+    const g=h+a;
+    if(g>1.5) pO15+=v; else pU15+=v;
+    if(g>2.5) pO25+=v; else pU25+=v;
+  }
+  const pNBTTS=1-pBTTS;
+  const nonDraw=pH+pA; pAH00 = nonDraw>0 ? pH/nonDraw : 0;
+  let winBy2p=0,winBy1=0;
+  for(let h=0;h<=maxGoals;h++) for(let a=0;a<=maxGoals;a++) { if(h-a>=2) winBy2p+=m[h][a]; if(h-a===1) winBy1+=m[h][a]; }
+  pAHm10 = (1-winBy1)>0 ? winBy2p/(1-winBy1) : 0;
+  return {pHome:pH,pDraw:pD,pAway:pA,pBTTS,pNBTTS,pOver15:pO15,pUnder15:pU15,pOver25:pO25,pUnder25:pU25,pAH00,pAHm10};
+}
+
+function quarterKelly(pReal,odd) { const fk=(pReal*odd-1)/(odd-1); return Math.max(0,0.25*fk); }
+
+function updateBankroll() {
+  const val=parseFloat(document.getElementById('bankroll').value)||0;
+  state.bankroll=val;
+  const fmt=val.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  document.getElementById('dash-bankroll').textContent=fmt;
+  document.getElementById('max-stake-pct').textContent=(2.5).toFixed(1)+'%';
+  document.getElementById('max-stake-val').textContent='R$ '+(val*0.025).toFixed(2);
+  if(state.poissonDone) rebuildValueBetTable();
+  updateTicketSummary();
+  saveState();
+}
+
+function runPoisson() {
+  const lh=parseFloat(document.getElementById('xg-home').value);
+  const la=parseFloat(document.getElementById('xg-away').value);
+  if(isNaN(lh)||isNaN(la)||lh<=0||la<=0){alert('Insira valores válidos para λ (xG projetado deve ser > 0).');return;}
+  const matrix=buildMatrix(lh,la);
+  const m=calcMarkets(matrix);
+  state.markets=buildMarketList(m);
+  state.poissonDone=true;
+  renderHeatmap(matrix); renderMarketProbs(m); renderProbBars(m); renderHandicap(m);
+  document.getElementById('poisson-results').style.display='block';
+  document.getElementById('vb-no-calc').style.display='none';
+  document.getElementById('vb-content').style.display='block';
+  rebuildValueBetTable();
+  saveState();
+}
+
+function buildMarketList(m) {
+  const hn=document.getElementById('home-name').value||'Mandante';
+  const an=document.getElementById('away-name').value||'Visitante';
+  return [
+    {id:'home',label:'Vitória '+hn+' (1)',pReal:m.pHome},
+    {id:'draw',label:'Empate (X)',pReal:m.pDraw},
+    {id:'away',label:'Vitória '+an+' (2)',pReal:m.pAway},
+    {id:'btts',label:'Ambas Marcam — Sim',pReal:m.pBTTS},
+    {id:'nbtts',label:'Ambas Marcam — Não',pReal:m.pNBTTS},
+    {id:'over15',label:'Over 1.5 Gols',pReal:m.pOver15},
+    {id:'under15',label:'Under 1.5 Gols',pReal:m.pUnder15},
+    {id:'over25',label:'Over 2.5 Gols',pReal:m.pOver25},
+    {id:'under25',label:'Under 2.5 Gols',pReal:m.pUnder25},
+    {id:'ah00',label:'H. Asiático 0.0 (DNB) — Casa',pReal:m.pAH00},
+    {id:'ahm10',label:'H. Asiático -1.0 — Casa',pReal:m.pAHm10},
+  ];
+}
+
+function renderHeatmap(matrix) {
+  const maxGoals=5; const max=Math.max(...matrix.flat());
+  const hn=document.getElementById('home-name').value||'M';
+  const an=document.getElementById('away-name').value||'V';
+  let html='<table style="border-collapse:separate;border-spacing:4px">';
+  html+='<tr><td class="heat-cell" style="background:transparent;color:#64748b;font-size:10px">'+hn.slice(0,3)+'\\'+an.slice(0,3)+'</td>';
+  for(let a=0;a<=maxGoals;a++) html+='<td class="heat-cell" style="background:transparent;color:#64748b;font-size:11px">'+a+'</td>';
+  html+='</tr>';
+  for(let h=0;h<=maxGoals;h++){
+    html+='<tr><td class="heat-cell" style="background:transparent;color:#64748b;font-size:11px">'+h+'</td>';
+    for(let a=0;a<=maxGoals;a++){
+      const p=matrix[h][a]; const intensity=max>0?p/max:0;
+      const bg=heatColor(intensity); const tc=intensity>0.5?'#0f172a':'#94a3b8';
+      html+='<td class="heat-cell" style="background:'+bg+';color:'+tc+';min-width:52px">'+(p*100).toFixed(1)+'%</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</table>';
+  document.getElementById('heatmap-container').innerHTML=html;
+}
+
+function heatColor(t) {
+  const r=Math.round(30+(245-30)*t);
+  const g=Math.round(41+(197-41)*t);
+  const b=Math.round(59+(24-59)*t);
+  return 'rgb('+r+','+g+','+b+')';
+}
+
+function renderMarketProbs(m) {
+  const hn=document.getElementById('home-name').value||'Mandante';
+  const an=document.getElementById('away-name').value||'Visitante';
+  const items=[
+    {label:'Vitória '+hn,val:m.pHome,color:'text-yellow-400'},
+    {label:'Empate',val:m.pDraw,color:'text-amber-400'},
+    {label:'Vitória '+an,val:m.pAway,color:'text-slate-300'},
+    {label:'BTTS Sim',val:m.pBTTS,color:'text-purple-400'},
+    {label:'BTTS Não',val:m.pNBTTS,color:'text-rose-400'},
+    {label:'Over 1.5',val:m.pOver15,color:'text-cyan-400'},
+    {label:'Over 2.5',val:m.pOver25,color:'text-teal-400'},
+  ];
+  let html='';
+  items.forEach(item=>{
+    const imp=item.val>0?(1/item.val).toFixed(2):'—';
+    html+='<div class="flex justify-between items-center py-1.5 border-b border-slate-800/50">';
+    html+='<span class="text-slate-400 text-sm">'+item.label+'</span>';
+    html+='<div class="flex items-center gap-3"><span class="text-xs text-slate-600">@'+imp+'</span>';
+    html+='<span class="font-bold text-sm '+item.color+'">'+(item.val*100).toFixed(2)+'%</span></div></div>';
+  });
+  document.getElementById('market-probs').innerHTML=html;
+}
+
+function renderProbBars(m) {
+  const total=m.pHome+m.pDraw+m.pAway;
+  let html='';
+  [{label:'1 (Casa)',val:m.pHome,cls:'bar-fill-green'},{label:'X (Empate)',val:m.pDraw,cls:'bar-fill-blue'},{label:'2 (Fora)',val:m.pAway,cls:'bar-fill-green'}].forEach(item=>{
+    const pct=total>0?(item.val/total*100).toFixed(1):0;
+    html+='<div class="bar-row"><span class="text-slate-400 w-24">'+item.label+'</span>';
+    html+='<div class="bar-track"><div class="'+item.cls+'" style="width:'+pct+'%"></div></div>';
+    html+='<span class="text-slate-400 text-xs w-12 text-right">'+(item.val*100).toFixed(1)+'%</span></div>';
+  });
+  document.getElementById('prob-bars').innerHTML=html;
+}
+
+function renderHandicap(m) {
+  const items=[
+    {title:'Handicap Asiático 0.0 (DNB)',formula:'P_home / (1 − P_draw)',val:m.pAH00,fairOdd:m.pAH00>0?1/m.pAH00:0},
+    {title:'Handicap Asiático −1.0',formula:'P(margem≥2) / (1 − P(margem=1))',val:m.pAHm10,fairOdd:m.pAHm10>0?1/m.pAHm10:0},
+  ];
+  let html='';
+  items.forEach(item=>{
+    html+='<div class="card-dark p-4"><div class="text-sm font-semibold text-slate-300 mb-1">'+item.title+'</div>';
+    html+='<div class="text-xs text-slate-600 mb-3 font-mono">'+item.formula+'</div>';
+    html+='<div class="flex justify-between">';
+    html+='<div><div class="text-xs text-slate-500">P_real</div><div class="text-lg font-bold text-yellow-400">'+(item.val*100).toFixed(2)+'%</div></div>';
+    html+='<div class="text-right"><div class="text-xs text-slate-500">Odd Justa</div><div class="text-lg font-bold text-white">@'+item.fairOdd.toFixed(2)+'</div></div>';
+    html+='</div></div>';
+  });
+  document.getElementById('handicap-probs').innerHTML=html;
+}
+
+function rebuildValueBetTable() {
+  const tbody=document.getElementById('vb-table-body');
+  let html='';
+  state.markets.forEach((mkt,idx)=>{
+    const oddId='odd-'+idx;
+    html+='<tr class="border-b border-slate-800/50 hover:bg-slate-800/30">';
+    html+='<td class="py-3 pr-4"><span class="text-slate-300 text-sm">'+mkt.label+'</span></td>';
+    html+='<td class="py-3 text-right text-yellow-400 font-mono text-sm">'+(mkt.pReal*100).toFixed(2)+'%</td>';
+    html+='<td class="py-3 text-right"><input type="number" id="'+oddId+'" class="input-field text-right" style="width:90px;padding:6px 10px" step="0.01" min="1.01" placeholder="—" oninput="calcVBRow('+idx+')" /></td>';
+    html+='<td class="py-3 text-right"><span id="pimp-'+idx+'" class="text-slate-500 text-sm font-mono">—</span></td>';
+    html+='<td class="py-3 text-right"><span id="ev-'+idx+'" class="text-sm font-bold">—</span></td>';
+    html+='<td class="py-3 text-right"><span id="kelly-'+idx+'" class="text-slate-400 text-sm font-mono">—</span></td>';
+    html+='<td class="py-3 text-right"><span id="stake-'+idx+'" class="text-slate-400 text-sm font-bold">—</span></td>';
+    html+='<td class="py-3 text-center"><button id="add-btn-'+idx+'" onclick="addToTicket('+idx+')" class="btn-amber" style="display:none">+Bilhete</button></td>';
+    html+='</tr>';
+  });
+  tbody.innerHTML=html;
+  updateVBSummary();
+  lucide.createIcons();
+}
+
+function calcVBRow(idx) {
+  const mkt=state.markets[idx]; if(!mkt) return;
+  const odd=parseFloat(document.getElementById('odd-'+idx).value);
+  if(isNaN(odd)||odd<=1){
+    document.getElementById('pimp-'+idx).textContent='—';
+    document.getElementById('ev-'+idx).textContent='—';
+    document.getElementById('ev-'+idx).className='text-sm font-bold text-slate-500';
+    document.getElementById('kelly-'+idx).textContent='—';
+    document.getElementById('stake-'+idx).textContent='—';
+    document.getElementById('add-btn-'+idx).style.display='none';
+    mkt.odd=null; mkt.ev=null; updateVBSummary(); return;
+  }
+  const pImp=1/odd; const ev=mkt.pReal*(odd-1)-(1-mkt.pReal);
+  const kf=quarterKelly(mkt.pReal,odd); const stakeVal=kf*state.bankroll;
+  document.getElementById('pimp-'+idx).textContent=(pImp*100).toFixed(2)+'%';
+  const evEl=document.getElementById('ev-'+idx);
+  if(ev>0.05){evEl.textContent='+'+(ev*100).toFixed(2)+'%';evEl.className='text-sm font-bold ev-positive';document.getElementById('add-btn-'+idx).style.display='inline-block';}
+  else if(ev>0){evEl.textContent='+'+(ev*100).toFixed(2)+'%';evEl.className='text-sm font-bold text-slate-500';document.getElementById('add-btn-'+idx).style.display='none';}
+  else{evEl.textContent=(ev*100).toFixed(2)+'%';evEl.className='text-sm font-bold ev-negative';document.getElementById('add-btn-'+idx).style.display='none';}
+  document.getElementById('kelly-'+idx).textContent=kf>0?(kf*100).toFixed(2)+'%':'0%';
+  document.getElementById('stake-'+idx).textContent=kf>0?'R$ '+stakeVal.toFixed(2):'R$ 0';
+  mkt.odd=odd; mkt.ev=ev; mkt.kellyPct=kf; mkt.stakeVal=stakeVal;
+  updateVBSummary(); saveState();
+}
+
+function updateVBSummary() {
+  const vbs=state.markets.filter(m=>m.ev!==null&&m.ev!==undefined&&m.ev>0.05);
+  document.getElementById('dash-valuebets').textContent=vbs.length;
+  const container=document.getElementById('vb-summary-content');
+  if(vbs.length===0){container.innerHTML='<div class="text-slate-500 text-sm">Nenhuma value bet com EV > +5% encontrada. Insira as odds acima.</div>';return;}
+  let html='<div class="space-y-3">';
+  vbs.forEach(vb=>{
+    html+='<div class="card-dark p-4 flex flex-wrap gap-3 items-center justify-between">';
+    html+='<div><div class="text-sm font-medium text-slate-200">'+vb.label+'</div>';
+    html+='<div class="text-xs text-slate-500 mt-0.5">Odd: @'+vb.odd.toFixed(2)+'</div></div>';
+    html+='<div class="flex gap-4">';
+    html+='<div class="text-center"><div class="text-xs text-slate-500">P_real</div><div class="text-sm font-bold text-yellow-400">'+(vb.pReal*100).toFixed(2)+'%</div></div>';
+    html+='<div class="text-center"><div class="text-xs text-slate-500">EV%</div><div class="text-sm font-bold text-yellow-400">+'+(vb.ev*100).toFixed(2)+'%</div></div>';
+    html+='<div class="text-center"><div class="text-xs text-slate-500">Stake</div><div class="text-sm font-bold text-white">R$ '+vb.stakeVal.toFixed(2)+'</div></div>';
+    html+='</div></div>';
+  });
+  html+='</div>'; container.innerHTML=html;
+}
+
+function addToTicket(idx) {
+  const mkt=state.markets[idx]; if(!mkt||mkt.ev===null||mkt.ev<=0.05) return;
+  if(state.ticket.length>=2){alert('⚠️ Bilhete cheio! Máximo 2 seleções.');return;}
+  if(state.ticket.find(t=>t.id===mkt.id)){alert('Esta seleção já está no bilhete.');return;}
+  state.ticket.push({...mkt}); renderTicket(); updateTicketSummary();
+  document.getElementById('dash-ticket-status').textContent=state.ticket.length+'/2';
+  saveState();
+}
+
+function removeFromTicket(id) {
+  state.ticket=state.ticket.filter(t=>t.id!==id); renderTicket(); updateTicketSummary();
+  document.getElementById('dash-ticket-status').textContent=state.ticket.length+'/2';
+  saveState();
+}
+
+function clearTicket() {
+  state.ticket=[]; renderTicket(); updateTicketSummary();
+  document.getElementById('dash-ticket-status').textContent='0/2';
+  saveState();
+}
+
+function renderTicket() {
+  const container=document.getElementById('ticket-legs');
+  const empty=document.getElementById('ticket-empty');
+  if(state.ticket.length===0){container.innerHTML='';empty.style.display='block';document.getElementById('ticket-summary').style.display='none';return;}
+  empty.style.display='none';
+  let html='';
+  state.ticket.forEach((item,i)=>{
+    html+='<div class="ticket-item valid"><div class="flex justify-between items-start"><div>';
+    html+='<div class="text-xs text-slate-500 mb-0.5">Seleção '+(i+1)+'</div>';
+    html+='<div class="text-sm font-semibold text-slate-200">'+item.label+'</div>';
+    html+='<div class="flex gap-3 mt-1"><span class="text-xs text-yellow-400">@'+item.odd.toFixed(2)+'</span>';
+    html+='<span class="text-xs text-slate-500">EV: +'+(item.ev*100).toFixed(1)+'%</span></div></div>';
+    html+='<button onclick="removeFromTicket(\''+item.id+'\')" class="text-slate-600 hover:text-red-400 ml-2"><i data-lucide="x" class="w-4 h-4"></i></button>';
+    html+='</div></div>';
+  });
+  container.innerHTML=html; lucide.createIcons();
+}
+
+function updateTicketSummary() {
+  const summaryEl=document.getElementById('ticket-summary');
+  if(state.ticket.length===0){summaryEl.style.display='none';return;}
+  summaryEl.style.display='block';
+  const combinedOdd=state.ticket.reduce((acc,t)=>acc*t.odd,1);
+  const minStake=Math.min(...state.ticket.map(t=>t.stakeVal));
+  const potReturn=(minStake*combinedOdd).toFixed(2);
+  document.getElementById('ticket-combined-odd').textContent='@'+combinedOdd.toFixed(3);
+  const zoneEl=document.getElementById('ticket-zone-badge');
+  if(combinedOdd>=1.95&&combinedOdd<=2.15) zoneEl.innerHTML='<span class="badge-green">✓ Zona Ótima @2.00</span>';
+  else if(combinedOdd<1.95) zoneEl.innerHTML='<span class="badge-amber">⚠ Abaixo da zona</span>';
+  else zoneEl.innerHTML='<span class="badge-red">⚠ Acima da zona</span>';
+  document.getElementById('ticket-stake').textContent='R$ '+minStake.toFixed(2);
+  document.getElementById('ticket-return').textContent='R$ '+potReturn;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+  restoreState();
+  if (!loadState()) {
+    updateBankroll();
+    setTimeout(() => { runPoisson(); }, 400);
+  }
+});
+</script>
 </body>
 </html>
