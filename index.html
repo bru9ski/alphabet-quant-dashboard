@@ -218,14 +218,13 @@
 </main>
 
 <script>
+const LOGO_SRC = 'LOGO_DATA_URI_HERE';
 const STORAGE_KEY = 'handicap_pro_state_v1';
 const state = { bankroll: 1000, poissonDone: false, markets: [], ticket: [] };
 
 document.addEventListener('DOMContentLoaded', () => {
   const logoEl = document.getElementById('brand-logo');
-  if (logoEl) {
-    logoEl.src = '__LOGO_PLACEHOLDER__';
-  }
+  if (logoEl && LOGO_SRC !== 'LOGO_DATA_URI_HERE') logoEl.src = LOGO_SRC;
   lucide.createIcons();
   restoreState();
   if (!loadState()) { updateBankroll(); setTimeout(runPoisson, 400); }
